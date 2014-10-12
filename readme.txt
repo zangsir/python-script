@@ -1,3 +1,5 @@
+These are source files used in the project of machine learning and time series data mining of speech and music data. Include source code in python and PSL as well as some csv files, mostly used to generate various forms of data files and process them from raw data.
+
 #to get polynomial fitting parameters (unnormlalized duration)
 1. use the polyfit-tone.py script with speaker.csv (time,pitch,pitch_con)
 
