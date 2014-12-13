@@ -1,4 +1,4 @@
-#this script uses tsclust package in r to perform SAX representation clustering with mindist.
+#this script uses tsclust package in r to perform SAX representation clustering with mindist. originally created in August 2014.modified first in Dec.2014.
 
 #notice that, when you do this with alpha=2, it doesn't work well with mindist because it counts strings with only one letter difference as 0 distance.
 
