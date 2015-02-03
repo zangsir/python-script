@@ -4,11 +4,14 @@
 #now, the modified version generates them as two separate contours, with distinct pitch con ids and with 30 point long vector
 from collections import defaultdict
 import csv
+#per_label:among all columns, group all others by the value of one column, so it doesn't matter if col or row wise data, in col wise data, many rows have same pitch_con_id and are grouped under one list; in row wise data, all of these pitch values are in one row, and are likewise grouped under one pitch_con_id.
 
+#but actually in the row-wise case, you don't have to do this, b/c you can easily read in each row and just get the list from csv reader.
 per_label = defaultdict(list)
 
 #assume this is on desktop, which has another folder named python-script/csv
-inputfilename="/Users/zangsir/Desktop/allxud_file.csv"
+#for D1 feature it originally used allxud_new.csv as input
+inputfilename="./xu_data_qp2/allxu-3speakers.csv"
 
 with open(inputfilename, 'rU') as inputfile:
     reader = csv.reader(inputfile)
@@ -27,7 +30,7 @@ title.append("Normtime")
 title.append("speaker")
 title.append("pitch_con")
 
-with open("smoothed-col-yixud.csv","w") as f:
+with open("smoothed-col-yixu.csv","w") as f:
     writer=csv.writer(f)
     writer.writerow(title)
     
@@ -54,7 +57,7 @@ for key in per_label:
             z.append(key+"_1")
         else:
             z.append(key+"_2")
-        with open("smoothed-col-yixud.csv","a") as f:
+        with open("smoothed-col-yixu.csv","a") as f:
             writer=csv.writer(f)
             writer.writerow(z)
         

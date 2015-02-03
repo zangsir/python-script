@@ -158,12 +158,12 @@ confusionMatrix(syl1.clu$cluster.syl1,syl1.clu$label)
 ################################# N O R M A L I Z A T I O N      O F      P I T C H
 #convert this file to col-wise data file using group-r-to-c-xu.py
 #read in col-wise data to perform pitch normalization
-allxu.col<-read.csv("~/Desktop/python-script/smoothed-col-yixu.csv")
+allxu.col<-read.csv("/Users/zangsir/python-script/smoothed-col-yixu.csv")
 allxu.col$Syllable1<-as.factor(allxu.col$Syllable1)
 allxu.col$Syllable2<-as.factor(allxu.col$Syllable2)
 
 #add a first-second syllable feature for 
-allxu.col$syl<-"first"
+allxu.col$syl<-"1"
 #selecting only the 1st syllable
 for (i in 1:length(allxu.col$pitch_con)){
 	allxu.col$pitch_con[i]->a
@@ -171,7 +171,7 @@ for (i in 1:length(allxu.col$pitch_con)){
 	#print(b)
 	if (b[[1]][4]=="2"){
 	#	print(b[[1]][4])
-		allxu.col$syl[i]<-"second"
+		allxu.col$syl[i]<-"2"
 		}
 
 }
@@ -183,35 +183,47 @@ allxu.col$syl<-as.factor(allxu.col$syl)
 mtt1<-allxu.col
 pcl=levels(mtt1$pitch_con)
 
-#initialize tpc
+#initialize tpc and new attributes
 tpc=mtt1[1,]
 #tpc$time<-0
-tpc$f0_norm<-0
-tpc$f0_cent<-0
+
+tpc$cent<-0
 tpc$bark<-0
+
+tpc$f0_norm<-0
 tpc$f0_norm_bk<-0
-#time normalization:for each pitch contour, do the normalization
+tpc$f0_norm_ct<-0
+############# time normalization:for each pitch contour, do the normalization
 for (j in 1:length(pcl)){
   #cpc is current pitch contour,tpc is the rbind all cpcs(total pitch contours)
   cpc=mtt1[mtt1$pitch_con==pcl[j],]
-  #convert to cent
+  ##########convert to cent
   a=cpc$pitch/55
-  cpc$f0_cent=1200*log(a,2)
+  cpc$cent=1200*log(a,2)
   
-  #convert to bark
+  ###########convert to bark
   f0=cpc$pitch
   cpc$bark<-7*log(f0/650 + sqrt(1+(f0/650)^2))
+  #to sum up the variables:cpc$f0_cent, cpc$bark, f0=cpc$pitch 
+  
+  ##########pitch normalization for hertz, cent and bark based values
+  #to do cent, switch from pitch to cent
+  mean_f0=mean(cpc$pitch)
+  mean_f0_bk=mean(cpc$bark)
+  mean_f0_ct=mean(cpc$cent)
+
+  #normalize hertz
+  cpc$f0_norm<-cpc$pitch-mean_f0
+  #f0 normalized cent
+  cpc$f0_norm_ct<-cpc$cent-mean_f0_ct
+  #bark normalized  
+  cpc$f0_norm_bk<-cpc$bark-mean_f0_bk
+  
 
   
-  #pitch normalization
-  mean_f0=mean(cpc$f0_cent)
-  mean_f0_bk=mean(cpc$bark)
-  #sd_f0=sd(cpc$pitch)
-  cpc$f0_norm=cpc$f0_cent-mean_f0
-  cpc$f0_norm_bk<-cpc$bark-mean_f0_bk
   tpc=rbind(tpc,cpc)
 }
-#time normalized now, stored in tpc_t2 for tone 1, etc.minus the very first row (made up)
+#time normalized now, stored in tpc_t2 for tone 2, etc.minus the very first row of tpc(made up)
 tpc_t1<-tpc[-1,]
 str(tpc_t1)
 
@@ -229,9 +241,27 @@ plot(test$time,test$f0_norm,pch=3,col=3)
 
 
 #R E M E M B E R    TO   S E L E C T    C O L S   T O    W R I T E
-#col 9 is f0_norm, or you might choose f0_norm_bark
-a<-tpc_t1[,c(1,9,3,4,5,6,7)]
-write.csv(a,"~/Desktop/allxu-col.csv",row.names = FALSE)
+#col 9 is f0_norm, or you might choose f0_norm_bark (in which case substitute 9 with the col number for f0_norm_bk)
+
+#add tone labels
+tpc_t1[tpc_t1$syl=="1",]->xunorm1
+tpc_t1[tpc_t1$syl=="2",]->xunorm2
+xunorm1$tone<-xunorm1$Syllable1
+xunorm2$tone<-xunorm2$Syllable2
+
+xunorm1$prev<-as.factor("none")
+xunorm2$prev<-as.factor(xunorm2$Syllable1)
+
+xunorm_new<-rbind(xunorm1,xunorm2)
+head(xunorm_new)
+
+#select columns to write to csv file
+a<-xunorm_new[,c(3,4,1,13,6,7,8,14,15)]
+write.csv(a,"~/Desktop/allxu-col-ctnorm.csv",row.names = FALSE)
+
+
+
+
 #converted to row data file, newfile-yixunorm.csv first, modify the colums, then using group-xu.py 
 xunorm<-read.csv("~/Desktop/newfile-yixunorm.csv")
 
@@ -271,9 +301,29 @@ head(xunorm_new)
 write.csv(xunorm_new,"~/Desktop/xunorm_new.csv",row.names=FALSE)
 #xunorm_new has tone attributes, xunorm does not
 
-#original dataset (rowwise): xunorm_new
+#original dataset (row-wise): xunorm_new
 
-####################C L U S T E R I N G   o n  1  o r    m o r e        s p e a k e r 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#################### C L U S T E R I N G   o n  1  o r    m o r e        s p e a k e r 
 
 #kmeans clustering on syllable 1 with normalized data
 head(xunorm_new)
@@ -342,6 +392,21 @@ syl1.clu[syl1.clu$tone.syl1=="1",]$label<-"3"
 syl1.clu[syl1.clu$tone.syl1=="2",]$label<-"4"
 
 confusionMatrix(syl1.clu$cluster.syl1,syl1.clu$label)
+
+
+
+############################# C L U S T E R I N G    E N D S
+
+
+
+
+
+
+
+
+
+
+
 
 
 
