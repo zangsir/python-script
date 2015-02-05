@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 per_label = defaultdict(list)
-inputfilename="./csv/total_adult_raw.csv"
+inputfilename="./csv/shuo.csv"
 
 with open("newfile.csv","w") as f:
     writer=csv.writer(f)

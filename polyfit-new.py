@@ -1,5 +1,7 @@
 #this polyfit script is new. takes the new csv file with 30point data vector, and columns for duration and mean_f0 of the pitch contour
 
+#note that in this input file, pitch is normalized so that each contour has sd of 1 and mean of 0, a bad strategy.
+
 from collections import defaultdict
 import csv
 import numpy as np
@@ -18,15 +20,16 @@ with open(inputfilename, 'rU') as inputfile:
     # skip the header row
     next(reader, None)  
 
+#per_label:among all columns, group all others by the value of one column
     for time, pitch, pitch_con,duration,mean_f0 in reader:
         per_label[pitch_con.strip()].append([time.strip(), pitch.strip(),duration,mean_f0])
 
 
 for key in per_label:
     b=[]
-    #time originally in unit of second, *1000 is ms, but here is sth in between to make the parameter values reasonable
+    #time is 1,...,30,so we just append it into b each iteration
     for i in range(len(per_label[key])):
-        b.append([(float(per_label[key][i][0])-float(per_label[key][0][0]))/10])
+        b.append([int(per_label[key][i][0])])
     for i in range(len(b)):
         b[i].append(float(per_label[key][i][1]))
     #duration=b[-1][0]*100

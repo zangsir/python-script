@@ -112,9 +112,25 @@ str(allxudn)
 #allxudn is new allxud, contains 30-point vector, attribute about tone, syllable. row-wise, for clustering, this is first derivative profile. 
 write.csv(allxudn,"~/Desktop/allxudn-3speakers.csv",row.names = FALSE)
 
+########## write to file.
+# notice that this is D1 profile, so it doesn't need any normalization - it's already a feature normalized.
+
+
+
+
+
+
+
+
+
+
+
+
+#################################################### c l u s t e r i n g
+#note that kmeans clustering takes row wise vectors
 
 #clustering with D1
-#subset for numeric
+#subset for numeric columns
 
 data_xud<-allxudn[,4:33]
 head(data_xud)
@@ -142,6 +158,9 @@ syl1.clu[syl1.clu$tone.syl1=="2",]$label<-"4"
 confusionMatrix(syl1.clu$cluster.syl1,syl1.clu$label)
 
 
+
+
+###################################### plot some contours, not very useful
 
 #try to plot to see what D1 contours look like
 allxud.col<-read.csv("~/Desktop/python-script/smoothed-col-yixud.csv")

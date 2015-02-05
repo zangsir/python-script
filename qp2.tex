@@ -1,0 +1,226 @@
+%grand scheme
+\documentclass{article}
+\usepackage{amsmath,cite}
+\usepackage{graphicx}
+
+%title
+% ------
+\title{Feature Selection in Mandarin Tone Modeling Using Time Series Data Mining Techniques}
+
+\author{ }
+
+
+
+
+\begin{document}
+\maketitle
+
+%abstract
+
+\begin{abstract}
+Bayesian models of categorical perception in speech benefits from the assumption that categories in speech sounds can be represented by a mixture of multivariate Gaussian distribution. Such assumptions makes mathematical analysis of posterior distribution more accessible. However, in the modeling of tone categories, the problem of dimensionality challenges us to find an efficient lower-dimension time-series representation that obeys the Gaussian assumption. In this paper, I take the first steps in exploring the properties of the tone categories and the appropriate time-series representations in a corpus of Mandarin connected speech audio recording. Different time-series representations based on models such as polynomial, qTA, and SAX are discussed. Machine learning (clustering and classification) experiments are conducted to evaluate the effectiveness of these representations. The results showed that the performance on the current dataset is below ideal in all measures tested comparing to previous work using SOM. Different degrees of separability are observed between - category. I discuss the limitations and validations to the different models considered.
+
+\end{abstract}
+
+
+
+
+% INTRODUCTION
+
+
+
+
+% original: INTRODUCTION
+%provide clear background and motivation
+
+\section{Introduction}\label{sec:introduction}
+
+%previous works on category perception/perceptual magenet, tone perception 
+%important (1) Feldman work; (2)Xu's work. Xu's work has focused on the production of F0 of tone, and also the SOM on perception, but it does not in general address the representation of tones in perception. (the qTA is a production model) 
+%to satisfy the gaussian assumptions of the perceptual magnet modelling, as well as to find dimensionality reduced feature vectors for machine learning, we look at the representations of tones in connected speech and how human listenr may represent and identify tone categories from a large amount of variants found in tone contours of speech signal.
+
+The influence of phonetic categories on speech perception has been well studied in the segmental domain. More specifically, categorical perception has been observed primarily for consonants \cite{liberman:57}, while vowel perception has been shown to be more continuous \cite{fry:62}. More recent work has studied the perceptual magnet effect on a number of vowels in different languages \cite{kuhl-et-al:92,iverson:95,diesch:99}. Categorical phenomena has also been shown in non-speech domains of cognition \cite{davidoff:99}. In the suprasegmental domain, such as the second language acquisition of a tone language, for instance, it is conceivable that we may expect to find the effect of existing intonational/tonal categorical influences across the production and perception of the target language's prosody, even though few studies have explicitly adopted this framework\cite{gauthier:07}. 
+
+Bayesian models offer new insights to the understanding of categorical phenomena in speech perception by computing specific, numerical, and empirically testable predictions of the behavior of the perceptual bias. Feldman et al \cite{feldman:09,feldman:13}  developed a Bayesian model of perceptual magnet, whose predictions are well matched by behavioral data in English vowels using multidimensional scaling analysis \cite{iverson:95}. 
+
+Here I propose two considerations in extending this model to the suprasegmental domain. First, in this model, phonetic categories (e.g., vowels) are modeled as a mixture of multivariate Gaussian distributions of speech sounds, whose dimensions depend on the dimension of the vectors that define the category (e.g., in the case of vowels, F1-F2 bivariate Gaussian). Despite being a simplified representation of distributions of speech sounds in real-life phonetic categories, this model therefore assumes a conveniently known distribution that makes it possible to compute posterior distributions by straightforward mathematical analysis. However, if a phonetic category cannot be represented efficiently by 2 or 3 features, then we face the problem of high dimensionality that makes it difficult to compute distance between vectors. In those cases we must consider ways of dimensionality reduction.
+
+Second, the original paper focused on perceptual magnet using vowel categories. Nonetheless, in principle there is no components to limit the model to the segmental domain and prevent generalization into prosodic domains (i.e., tone and intonation). As discussed above, the attempt to extend the Feldman et al\cite{feldman:09} perceptual-magnet model to tone perception faces two challenges: (1) we must prove that tone vectors that belongs to a single category can be described by a Gaussian distribution; (2)we must find a suitable representation of the time-series vectors of tones that addresses the dimensionality problem, in the mean time reflecting the Gaussian-like distribution property of tone categories.
+
+%representation of distributions in tone category
+%1.task of dealing with variances; 2. task of learning a tone language
+
+This paper reports the first steps in exploring the properties of the tone categories and the appropriate time-series representations in a corpus of Mandarin connected speech audio recording. The research questions are defined as follows: (1) Can tone contours in this dataset be clustered / classified into the four tone categories in Mandarin? (2) What is the appropriate time-series representation that addresses both the dimensionality problem and the Gaussian assumption? (3) Can we assume the tone categories are represented with a Gaussian distribution? 
+
+The rest of the paper is organized as follows. The next section discusses the methodologies proposed in this paper. This includes alternate approaches of time-series representation, and methodologies of clustering using different combinations of representations and vectors. Following the discussion, we proceed to report the procedures in experimenting with these methods, and the results of each procedure.
+%two gaps: (1) permag in prosody domain; (2) representation of distributions
+%define research questions
+% --general introduction on research question, motivation and goals (cognitive representation and machine learning, and the implications for various models that reflect or not this property of distance; 
+% --another concrete RQ is to ask how does D1 perform in this unsupervised task as compared to other features, it is higher dimension but may give a good result)
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% B A C K G R O U N D %%%%%%%%%%%%%%%%%%%%%%%
+
+% --background: mandarin tones and variability
+% --previous work
+\section{Background and Related Work}
+
+
+\subsection{}
+
+
+In the canonical forms of Mandarin tone system, four tone categories are present: high-level (High tone), rising (Rising tone), low-dipping (Low tone) or falling (Falling tone). Following convention, these are also referred to as tone 1, 2, 3, and 4 in this paper. \figref{fig:4tones} shows the (time-normalized) F0 contours of five tokens and their means of the four Mandarin tones produced in citation form by a male speaker (data from \cite{xu:97}). As can be seen, when produced in isolation by a single speaker, the tones are well separated even when time-normalized. They become much less separated, however, when spoken in connected speech and when uttered by different speakers. \figref{fig:4tones}(b) and (c) show the means and distributions of the same four tones spoken in connected utterances by three male speakers \cite{xu:97}. Gauthier et al\cite{gauthier:07} identified two major sources for the extensive overlap between the tones. The first is the difference in the pitch range of individual speakers and the second is the variability introduced by tonal context in connected speech \cite{shen:90, xu:97}. Similar variability has been found in other tone languages \cite{han:74}. 
+
+
+
+%this paragraph may not be appropriate here 
+% To the author's knowledge, most previous works on tone F0 contours have not addressed tone separability and perception in connected speech. In the discussion of the difficulty of tone learning in tone 3 and tone 2, for instance, the majority of literature focus on tone perception in isolation \cite{shen:90,blicher:90,chang:11}, where the tones are more well separated and bear different properties from tones in connected speech (e.g., in connected speech, tone 3 is realized as a short low tone, whereas in isolation it is pronounced as a low-rising tone with the longest duration among all four tones). Prom-on et al \cite{prom-on:09} has developed a series of models based on PENTA and qTA, focusing on the production of F0 tone contours in connected speech. However, the models primarily focus on the generation of F0 contours in speech production, and do not in general address perception and identification of tone categories. From a tone perception and acquisition perspective, however, tone perception in connected speech occupies an important place in the understanding of the mechanisms of tone identification, and poses special challenge to both human and machine learning of tone categories from the large amount of variances found in real-life connected speech.
+
+
+
+
+%//where to put theoretical connections to the cognitive process of tone id? look at Gauthier et al, also what to include about naomi feldman paper, Deempti paper, Zsiga's approach phonological? some or most of these seemed appropriate for a discussion section at the end. in the intro, we want background, motivation, research questions, gaps filled, etc.
+
+
+
+
+
+
+% METHODOLOGY
+% overview, unsupervised learning, rationale
+
+
+
+% time series representation (polyfits, qTA, numeric, symbolic, D1)      //this is a big core section, including introducing the idea, theoretical background, procedure to obtain these features, not necessarily all introduce in this section. think about all the features, each deserve a sub section, so this might just break into its own section
+%time-series reprsentation
+As discussed above, a primary goal in the current paper is to compare and evaluate different ways of time-series representation in order to find feature-vector combinations that is (1)low in dimensionality, (2)effective in clustering tones into categories represented by Gaussian distributions. Gauthier et al \cite{gauthier:07} used a raw 33-point pitch vector and the first derivatives (D1) of the F0 values as feature vectors on some ~2000 observations of tone contours, and obtained optimal results with Self-Organizing Map(SOM), a type of neural network. In particular, they found that the D1 feature vectors yielded an almost perfect result in clustering and classification tasks. However, no attempt of dimensionality reduction was made. Moreoever, in comparison, the current study is tested on a smaller dataset (around ~400 tone contours), which may consitutes a limitation on the results of the study. In the next section, I discuss the four types of time-series representation used in this paper.
+
+\section{Time-Series Representation}
+%(1)time series representation: qTA, polynomial fitting, SAX, raw F0 vector (diff or same length)
+\subsection{Polynomial Fitting}
+Suppose that the surface F0 contour can be represented by a polynomial in the form of:
+
+%%%%%%%%%%%%%%%%%%%%%%%% E Q U A T I O N %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%equations
+\begin{equation}
+y=a+bx+cx^2+...+mx^n
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this representation, we consider the representation of a pitch contour vector (with a dimension from 6 to 30) using a vector of polynomial parameters. Specifically, we fit extracted F0 contour pitch vectors of different length to a third-degree polynomial in the following form, represented by four parameters a, b, c, and d:
+
+%%%%%%%%%%%%%%%%%%%%%%%% E Q U A T I O N %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%equations
+\begin{equation}
+y=a+bx+cx^2+dx^3
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The choice of a third-degree polynomial is motivated by (1) the property of F0 curves of tones, which is asymmetric and non-linear; (2) the small number of dimensions and the efficiency of representating a variety of shapes. The polynomial parameters for a 4-d vector (four parameters of the polynomial) on time-normalized pitch contours, as well as a 5-d vector with the duration of the given contour (four parameters of polynomial plus a duration parameter) group for clustering and classification.
+
+
+\subsection{quantitative Target Approximation}
+The qTA parameter representation is based on the quantitative Target Approximation model of tone production (Prom-on et al \cite{prom-on:09}). In this model, in the process of tone contour production, each tone is produced with a pitch target in mind, defined by a linear equation with a slope and a intercept parameters, m and b:
+
+%%%%%%%%%%%%%%%%%%%%%%%% E Q U A T I O N %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%equations
+\begin{equation}
+x(t)=mx+b
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+However, the realization of this target is often constrained and deviated by the characteristic factors of the human vocal folds, such as the continuity of pitch change (no sudden change in the derivatives of the curves across syllable boundary) and the limitation of the maximum speed of pitch change \cite{xu:02}. As a result, actual F0 contours of tones are characterized by a third-order critically damped system:
+
+%%%%%%%%%%%% E Q U A T I O N %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%equations
+\begin{equation}
+f0(t)=x(t)+(c_1+c_2t+c_3t^2)e^\lambda t
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Solving this equation, we have in total three parameters to represent a tone contour with the qTA model: slope and height of the pitch target, namely, m and b, and $\lambda$, which represents how fast the pitch change is approaching the target slope and height. \figref{fig:qta} shows a number of different combinations of the parameters to demonstrate how the actual F0 behaves in accordance with the underlying pitch targets. In this paper, we experiment with representing each tone contour with the 3-d vector of qTA parameters. Given that qTA model has been shown to perform well in producing curves that closely resemble real tone contours in connected speech, an important question to be asked in this paper is: do qTA parameters perform well to reflect the similarities between tones in perception? In other words, in order to use the qTA parameters to achieve both dimensionality reduction and model-based clustering, we want to make sure that qTA parameters have the property where perceptually similar tone contour shapes also have similar parameter values. However, that is an empirical question not addressed in the proposal of qTA model, and it is yet to be seen whether qTA parameters are suitable for this task. Similarly, we also investigate the behavior of polynomial parameters in this regard.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%% F I G U R E %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[h]
+ \centerline{\framebox{
+ \includegraphics[scale=0.2]{qta.png}}}
+ \caption{Examples of F0 contours generated by the qTA model with varying values of m, b, and $\lambda$. The dashed lines indicate the underlying pitch targets which are linear functions of m and b. The vertical lines show the syllable boundaries through which the articulatory state propagates.}
+ \label{fig:qta}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{Symbolic Aggregate approXimation}
+An important capacity of human cognition is its capacity to abstract away the commonalities from groups of pitch contours with much different fine detail variations. In this study, we experiment with the Symbolic Aggregate approXimation (SAX) representation of pitch contour vectors. SAX is the first symbolic representation for time series that allows for dimensionality reduction and indexing with a lower-bounding distance measure. In classic data mining tasks such as clustering, classification, index, etc., SAX is as good as well-known representations such as DWT and DFT, while requiring less storage space.\cite{Lin:07}.
+
+Even though SAX representation is mostly used in time series data mining in the fields of bioinformatic (DNA sequencing) and shape mining, it has been applied to the computation of contour similarity from audio signals in a Query By Humming task \cite{Valero:13} in the context of music information retrieval (MIR). It transforms the pitch contour into a symbolic representation with a user-designated length (nseg=desired length of the feature vector) and alphabet size (m), the latter being used to divide the pitch space of the contour into m parts assuming a gaussian distribution of F0 values. It is in principle very suitable for the current task as discussed above, as it is able to transform the fast-changing time varying signal of pitch contour into a coarse representation of abstract "shapes", which mimics the human cognition. In the current paper, we also show results from hierarchical clustering using a core dataset identified by the SAX representation to bear maximum simiarity to the tone contour shapes of the tone categories. These results validates that the SAX representation is indeed a good representation of tone contour shapes, analygous to the H-M-L representation used by linguists.
+
+
+
+\subsection{Raw Time-series Pitch Vector }
+Gauthier \cite{gauthier:07} showed that clustering and classification using SOM yielded a nearly 80\% correct result when time-series are represented with a 33-point raw vector, despite the large dimension of this vector. In the current paper, we experimented with both different length raw pitch vectors and a equal length 30-point vector representation of pitch contours. The latter is desired also because of the requirement of many machine learning algorithms, including the SAX algorithm that converts equal-length vectors into dimensionality-reduced symbolic representations.
+
+
+
+
+
+
+
+
+% distance measure (euclidean, dtw, min-dist)
+
+
+% data set collection, preprocessing (including z-score normalization strategy), feature / model parameter extraction, connected speech vs. read speech, two syllable structure in design of this data set
+\subsection{Model Parameter Extraction}
+For each of the dimensionality-reducing time series representation, codes are implemented to extract the model parameters from the raw F0 contours. Polynomial parameters are extracted with the numpy polyfit function in python. qTA parameters are extracted using the qTA PENTA Trainer praat script \footnote{This tool is developed in tandem with the qTA model by \cite{prom-on:09}, downloaded at http://www.phon.ucl.ac.uk/home/yi/PENTAtrainer1/.}. Symbolic representation of time-series based on SAX algorithm is converted using an implementation in Mablab.\footnote{The matlab code is modeled after the SAX demo code available from Jessica Lin at http://www.cs.gmu.edu/~jessica/sax.htm.} In addition to the model parameters, a number of other features are included, including the normalized mean pitch height, previous tone context, and the duration of the contours.
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% clustering / empirical evaluation section
+% clustering algorithms (k means, hierarchical,model based clustering)
+% evaluation (confusion matrix,)
+% //look more into TS clustering papers for ideas of what else to include
+% //in principle we're only concerned with clustering so don't need to bother with SOM, but if you have time you can see what to do with it.
+% //note here that a big chunk of research in this paper is obtain features, including extracting model parameters. therefore, these should deserve as much space as the clustering experiments, which are evaluations. ***IMPORTANT
+% CLUSTERING EXPERIMENTS //experimental evaluation look at J.Lin's paper
+
+
+
+
+
+
+
+
+
+
+
+% RESULTS
+
+% discussion and limitations
+
+
+
+%Appendix 1
+%put normalized against original results contour here using wrong strategy and correct, from tone-modelling website
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%questions/ideas
+%do we include the connected speech dataset? for now, we first choose not to include it, you can explain the reason. if this doesn't work out, we'll include it.
+
+% find out what has been done in the summer so don't need to do it again. (1)one important thing i see is the distinction b/t using first and second syllable, the former being isolation and latter being connected in a sense. many results are shown that the clustering results of the second is expectedly much worse than the first, and this should call for attention. we should show analysis results separately and collectively; (2)much of the anaPost posts are about discovering the correct strategy for normalization; (3)
+
+%overall this is big on methodology/experiment and short on results sections
