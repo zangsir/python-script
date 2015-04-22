@@ -66,16 +66,16 @@ for file in onlyfiles:
     xs=f.readlines()
     f.close
     
-    newfile="/Users/zangsir/Desktop/submission2/"+file
+    newfile="/Users/zangsir/Desktop/submission/"+file
     g=open(newfile,"w")
     g=open(newfile,"a")
 
     for line in xs:
         if line.lstrip():
             if line.lstrip()[:7]=="boxplot":
-                g.write("#+ test-b, fig.width=5, fig.height=5 \n")
+                #g.write("#+ test-b, fig.width=5, fig.height=5 \n")
                 g.write(line)
-                print "wrote  to " + line
+                #print "wrote  to " + line
             else:
 
                 if line.lstrip()[0]=="#":
@@ -91,5 +91,5 @@ for file in onlyfiles:
                     a[i]=a[i]+"\n"
                     g.write(a[i])
             
-        
+    g.close()
             
