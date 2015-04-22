@@ -1,3 +1,5 @@
+
+#used with test file fun1.txt
 import re, sys, fileinput
 #get file from command line with fileinput.input() and iterate over the lines
 for line in fileinput.input():
