@@ -1,0 +1,54 @@
+<text id="0001">
+<heading>
+Where
+is
+the
+end
+?
+</heading>
+The
+strong
+ties
+between
+the
+two
+countries
+will
+not
+break
+.
+<list>
+point
+</list>
+This
+is
+a
+test
+of
+r
+<1 robustness of the test>
+<=0.05 significant level is set over>
+1
+.
+<figure>
+FIGURE
+</figure>
+</text>
+<text id="0002”>
+<heading>
+Discussion
+</heading>
+The
+most
+general
+conclusion
+which
+can
+be
+drawn
+from
+the
+MANOVA
+is
+< 0.002. The magnitude of difference between the means of the experimental group's scores for EAT and the control's was moderate (eta squared =0.068). After consulting the means for the experimental (M19.88, SD,10.66) and control group (M14.88, SD,7.71) for the scores for EAT it is clear that the experimental group is significantly higher than the control. Body shape satisfaction scores were not significant using a Bonferroni adjusted level of 0.17 or using a significance level of 0.05: f (1,130) = 3.13 p>
+</text>
