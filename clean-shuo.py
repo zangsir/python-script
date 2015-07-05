@@ -14,7 +14,7 @@ for file in onlyfiles:
     filepath=dir+file
     f=open(filepath,"r")
     xs=f.readlines()
-    f.close
+    f.close()
     
     newfile="/Users/zangsir/Desktop/cleaned/cleaned_"+file
     g=open(newfile,"w")
@@ -38,4 +38,4 @@ for file in onlyfiles:
         #if none of these two cases above, then just write the line without the trailing spaces
         else:
             g.write(line.rstrip()+"\n")
-        
+    g.close()
